@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BoxMaster - Pro Prep Edition</title>
+    <style>
+        :root { 
+            --work: #ff3e3e; --rest: #00e676; --warn: #f1c40f; 
+            --prep: #888888; /* Color gris para preparación */
+        }
+        body { 
+            margin: 0; background: #000; color: white; font-family: 'Impact', sans-serif; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            height: 100vh; text-align: center; overflow: hidden;
+        }
+        #label { font-size: clamp(3rem, 10vw, 6rem); text-transform: uppercase; letter-spacing: 10px; }
+        #timer { font-size: clamp(10rem, 30vw, 22rem); line-height: 0.8; margin: 20px 0; font-weight: 900; }
+        #round-count { font-size: 2rem; font-family: sans-serif; opacity: 0.8; margin-bottom: 30px; }
+        .controls { display: flex; gap: 20px; }
+        button { 
+            padding: 20px 50px; font-size: 1.5rem; cursor: pointer; border: none; 
+            font-weight: bold; text-transform: uppercase; border-radius: 5px; transition: 0.2s;
+        }
+        #mainBtn { background: white; color: black; }
+        #resetBtn { background: transparent; color: white; border: 2px solid white; }
+        
+        /* Colores dinámicos */
+        .WORK { color: var(--work); }
+        .REST { color: var(--rest); }
+        .WARNING { color: var(--warn); }
+        .PREP { color: var(--prep); }
+    </style>
+</head>
+<body class="PREP"> <div id="label">PREPARACIÓN</div>
+    <div id="timer">00:30</div>
+    <div id="round-count">LISTO PARA EMPEZAR</div>
+    
+    <div class="controls">
+        <button id="mainBtn" onclick="toggle()">EMPEZAR</button>
+        <button id="resetBtn" onclick="reset()">REINICIAR</button>
+    </div>
+
+    <audio id="sndA" src="a.mp3" preload="auto"></audio>
+    <audio id="snd1" src="1.mp3" preload="auto"></audio>
+    <audio id="snd2" src="2.mp3" preload="auto"></audio>
+
+    <script>
+        let workTime = 180;
+        let restTime = 60;
+        let prepTime = 30; // 30 segundos de margen
+        
+        let time = prepTime;
+        let round = 1;
+        let phase = 'PREP'; // Fases: PREP, WORK, REST
+        let active = false;
+        let timerId = null;
+
+        function playSnd(id) {
+            const audio = document.getElementById(id);
+            audio.currentTime = 0;
+            audio.volume = 1.0;
+            audio.play().catch(e => console.log("Interacción requerida"));
+        }
+
+        function toggle() {
+            // Desbloqueo de audio
+            document.querySelectorAll('audio').forEach(a => {
+                a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
+            });
+
+            if (active) {
+                clearInterval(timerId);
+                active = false;
+                document.getElementById('mainBtn').innerText = "REANUDAR";
+                document.getElementById('mainBtn').style.background = "#f1c40f";
+            } else {
+                active = true;
+                document.getElementById('mainBtn').innerText = "PAUSA";
+                document.getElementById('mainBtn').style.background = "white";
+
+                timerId = setInterval(() => {
+                    time--;
+
+                    // Lógica de Rocky (solo en fase WORK)
+                    if (phase === 'WORK' && time === 11) {
+                        document.body.className = "WARNING";
+                        let n = Math.floor(Math.random() * 2) + 1;
+                        playSnd('snd' + n);
+                    }
+
+                    if (time < 0) {
+                        if (phase === 'PREP') {
+                            // Termina preparación -> Inicia Round 1
+                            phase = 'WORK';
+                            time = workTime;
+                            playSnd('sndA');
+                            document.body.className = "WORK";
+                            document.getElementById('label').innerText = "ROUND " + round;
+                            document.getElementById('round-count').innerText = `ROUND: ${round} / 12`;
+                        } 
+                        else if (phase === 'WORK') {
+                            // Termina Round -> Inicia Descanso
+                            phase = 'REST';
+                            time = restTime;
+                            playSnd('sndA');
+                            document.body.className = "REST";
+                            document.getElementById('label').innerText = "DESCANSO";
+                        } 
+                        else if (phase === 'REST') {
+                            // Termina Descanso -> Inicia Nuevo Round
+                            phase = 'WORK';
+                            round++;
+                            time = workTime;
+                            playSnd('sndA');
+                            document.body.className = "WORK";
+                            document.getElementById('label').innerText = "ROUND " + round;
+                            document.getElementById('round-count').innerText = `ROUND: ${round} / 12`;
+                        }
+                    }
+                    updateUI();
+                }, 1000);
+            }
+        }
+
+        function updateUI() {
+            let m = Math.floor(time / 60), s = time % 60;
+            document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function reset() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
