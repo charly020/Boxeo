@@ -2,42 +2,99 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>BoxMaster - Pro Prep Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BoxMaster - Ultra Elite</title>
     <style>
-        :root { 
-            --work: #ff3e3e; --rest: #00e676; --warn: #f1c40f; 
-            --prep: #888888; /* Color gris para preparación */
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Bebas+Neue&family=Roboto+Mono:wght@700&family=Black+Ops+One&family=Press+Start+2P&family=Teko:wght@600&family=Permanent+Marker&family=Righteous&family=Racing+Sans+One&family=Chakra+Petch:wght@700&display=swap');
+
+        :root { --work: #ff3e3e; --rest: #00e676; --warn: #f1c40f; --prep: #555; }
         body { 
-            margin: 0; background: #000; color: white; font-family: 'Impact', sans-serif; 
+            margin: 0; background: #000; color: white; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             height: 100vh; text-align: center; overflow: hidden;
+            background: linear-gradient(45deg, #000, #1a1a1a, #000);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
         }
-        #label { font-size: clamp(3rem, 10vw, 6rem); text-transform: uppercase; letter-spacing: 10px; }
-        #timer { font-size: clamp(10rem, 30vw, 22rem); line-height: 0.8; margin: 20px 0; font-weight: 900; }
-        #round-count { font-size: 2rem; font-family: sans-serif; opacity: 0.8; margin-bottom: 30px; }
-        .controls { display: flex; gap: 20px; }
-        button { 
-            padding: 20px 50px; font-size: 1.5rem; cursor: pointer; border: none; 
-            font-weight: bold; text-transform: uppercase; border-radius: 5px; transition: 0.2s;
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .settings-panel {
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.95);
+            padding: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
+            font-family: sans-serif; font-size: 11px; z-index: 100; border-bottom: 1px solid #444;
+            transition: transform 0.3s ease-in-out;
         }
-        #mainBtn { background: white; color: black; }
-        #resetBtn { background: transparent; color: white; border: 2px solid white; }
+        .settings-panel.hidden { transform: translateY(-100%); }
+
+        #toggleSettings {
+            position: fixed; top: 10px; right: 10px; z-index: 101;
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;
+        }
+
+        .config-area {
+            background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px;
+            display: flex; flex-direction: column; gap: 5px; border: 1px solid #333;
+        }
+        .config-area h3 { margin: 0 0 5px 0; font-size: 10px; color: var(--warn); text-transform: uppercase; }
+
+        #label { font-size: 6vw; text-transform: uppercase; letter-spacing: 5px; }
+        #timer { line-height: 0.8; margin: 10px 0; font-weight: 900; transition: font-size 0.2s; }
         
-        /* Colores dinámicos */
-        .WORK { color: var(--work); }
-        .REST { color: var(--rest); }
-        .WARNING { color: var(--warn); }
-        .PREP { color: var(--prep); }
+        .stats { display: flex; gap: 20px; font-family: sans-serif; opacity: 0.8; margin-bottom: 15px; }
+        .stat-box { background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 5px; min-width: 110px; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%; max-width: 450px; }
+        button { padding: 15px; cursor: pointer; border: none; font-weight: bold; text-transform: uppercase; border-radius: 8px; font-family: sans-serif; }
+        #mainBtn { background: white; color: black; grid-column: span 2; font-size: 1.5rem; }
+        .modeBtn { background: #222; color: #888; border: 1px solid #444; }
+        .active-mode { border: 2px solid white !important; color: white; background: #333; }
+        #resetBtn { background: #333; color: #777; grid-column: span 2; font-size: 12px; margin-top: 5px; border: 1px solid #444; }
+
+        select, input[type="range"] { background: #222; color: white; border: 1px solid #555; border-radius: 3px; padding: 2px; }
+
+        .WORK { color: var(--work); } .REST { color: var(--rest); } .WARNING { color: var(--warn); } .PREP { color: var(--prep); }
     </style>
 </head>
-<body class="PREP"> <div id="label">PREPARACIÓN</div>
-    <div id="timer">00:30</div>
-    <div id="round-count">LISTO PARA EMPEZAR</div>
+<body class="PREP" id="bodyTag" style="font-family: 'Impact', sans-serif;">
+
+    <button id="toggleSettings" onclick="togglePanel()">⚙️</button>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="config-area" id="boxConfig" style="border-color: var(--warn);">
+            <h3>🥊 Config Boxeo</h3>
+            <label>Rounds: <select id="boxRounds" onchange="updateRoundDisplay()"><option value="3">3</option><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option><option value="12" selected>12</option></select></label>
+            <label>Descanso: <select id="boxRest"><option value="30">30s</option><option value="45">45s</option><option value="60" selected>1 min</option><option value="90">1.5 min</option></select></label>
+        </div>
+
+        <div class="config-area" id="infConfig">
+            <h3>🔥 Config Infierno</h3>
+            <label>Rounds: <select id="infRounds" onchange="updateRoundDisplay()"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="30">30</option><option value="50">50</option></select></label>
+            <label>Trabajo: <select id="infWork"><option value="15">15s</option><option value="20" selected>20s</option><option value="30">30s</option><option value="45">45s</option></select></label>
+            <label>Descanso: <select id="infRest"><option value="10" selected>10s</option><option value="15">15s</option><option value="20">20s</option></select></label>
+        </div>
+
+        <div class="config-area">
+            <h3>🎨 Visual</h3>
+            <select onchange="document.getElementById('bodyTag').style.fontFamily = this.value">
+                <option value="Impact">Impact</option><option value="'Orbitron', sans-serif">Digital</option><option value="'Bebas Neue', cursive">Bebas</option><option value="'Black Ops One', cursive">Militar</option><option value="'Permanent Marker', cursive">Graffiti</option><option value="'Press Start 2P', cursive">8-Bit</option>
+            </select>
+            <input type="range" min="15" max="45" value="25" oninput="document.getElementById('timer').style.fontSize = this.value + 'vw'">
+        </div>
+    </div>
+
+    <div id="label">PREPARACIÓN</div>
+    <div id="timer" style="font-size: 25vw;">00:30</div>
+    
+    <div class="stats">
+        <div class="stat-box">ROUND: <span id="round-val">1/12</span></div>
+        <div class="stat-box">KCAL: <span id="kcal-val">0</span></div>
+    </div>
     
     <div class="controls">
         <button id="mainBtn" onclick="toggle()">EMPEZAR</button>
-        <button id="resetBtn" onclick="reset()">REINICIAR</button>
+        <button id="modeNormal" class="modeBtn active-mode" onclick="setMode('normal')">MODO BOXEO</button>
+        <button id="modeInferno" class="modeBtn" onclick="setMode('inferno')">MODO INFIERNO</button>
+        <button id="resetBtn" onclick="resetCounter()">REINICIAR CONTADOR</button>
     </div>
 
     <audio id="sndA" src="a.mp3" preload="auto"></audio>
@@ -45,90 +102,117 @@
     <audio id="snd2" src="2.mp3" preload="auto"></audio>
 
     <script>
-        let workTime = 180;
-        let restTime = 60;
-        let prepTime = 30; // 30 segundos de margen
-        
-        let time = prepTime;
-        let round = 1;
-        let phase = 'PREP'; // Fases: PREP, WORK, REST
-        let active = false;
-        let timerId = null;
+        let workT = 180, restT = 60, prepT = 30, time = 30;
+        let round = 1, maxRounds = 12, phase = 'PREP', active = false, timerId = null, kcal = 0;
+        let mode = 'normal';
+        let wakeLock = null;
+
+        function togglePanel() {
+            document.getElementById('settingsPanel').classList.toggle('hidden');
+        }
+
+        function updateRoundDisplay() {
+            if (mode === 'normal') {
+                maxRounds = parseInt(document.getElementById('boxRounds').value);
+            } else {
+                maxRounds = parseInt(document.getElementById('infRounds').value);
+            }
+            document.getElementById('round-val').innerText = `${round}/${maxRounds}`;
+        }
+
+        async function stayAwake() {
+            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+        }
+
+        function setMode(newMode) {
+            if(active) return;
+            mode = newMode;
+            document.querySelectorAll('.modeBtn').forEach(b => b.classList.remove('active-mode'));
+            if(mode === 'inferno') {
+                workT = parseInt(document.getElementById('infWork').value);
+                restT = parseInt(document.getElementById('infRest').value);
+                document.getElementById('modeInferno').classList.add('active-mode');
+                document.getElementById('infConfig').style.borderColor = "var(--warn)";
+                document.getElementById('boxConfig').style.borderColor = "#333";
+            } else {
+                workT = 180;
+                restT = parseInt(document.getElementById('boxRest').value);
+                document.getElementById('modeNormal').classList.add('active-mode');
+                document.getElementById('boxConfig').style.borderColor = "var(--warn)";
+                document.getElementById('infConfig').style.borderColor = "#333";
+            }
+            updateRoundDisplay();
+        }
 
         function playSnd(id) {
-            const audio = document.getElementById(id);
-            audio.currentTime = 0;
-            audio.volume = 1.0;
-            audio.play().catch(e => console.log("Interacción requerida"));
+            const a = document.getElementById(id); a.currentTime = 0; a.play().catch(()=>{});
+        }
+
+        function resetCounter() {
+            clearInterval(timerId); active = false;
+            time = 30; round = 1; kcal = 0; phase = 'PREP';
+            document.getElementById('mainBtn').innerText = "EMPEZAR";
+            document.getElementById('bodyTag').className = "PREP";
+            document.getElementById('label').innerText = "PREPARACIÓN";
+            updateRoundDisplay();
+            document.getElementById('kcal-val').innerText = "0";
+            updateDisplay();
         }
 
         function toggle() {
-            // Desbloqueo de audio
-            document.querySelectorAll('audio').forEach(a => {
-                a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
-            });
+            stayAwake();
+            document.getElementById('settingsPanel').classList.add('hidden');
+
+            if (!active && phase === 'PREP') {
+                if(mode === 'normal') {
+                    restT = parseInt(document.getElementById('boxRest').value);
+                    maxRounds = parseInt(document.getElementById('boxRounds').value);
+                } else {
+                    workT = parseInt(document.getElementById('infWork').value);
+                    restT = parseInt(document.getElementById('infRest').value);
+                    maxRounds = parseInt(document.getElementById('infRounds').value);
+                }
+                updateRoundDisplay();
+            }
+
+            document.querySelectorAll('audio').forEach(a => { a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{}); });
 
             if (active) {
-                clearInterval(timerId);
-                active = false;
+                clearInterval(timerId); active = false;
                 document.getElementById('mainBtn').innerText = "REANUDAR";
-                document.getElementById('mainBtn').style.background = "#f1c40f";
             } else {
                 active = true;
                 document.getElementById('mainBtn').innerText = "PAUSA";
-                document.getElementById('mainBtn').style.background = "white";
-
                 timerId = setInterval(() => {
                     time--;
+                    if(phase === 'WORK') { kcal += 0.166; document.getElementById('kcal-val').innerText = Math.floor(kcal); }
 
-                    // Lógica de Rocky (solo en fase WORK)
-                    if (phase === 'WORK' && time === 11) {
-                        document.body.className = "WARNING";
-                        let n = Math.floor(Math.random() * 2) + 1;
-                        playSnd('snd' + n);
+                    if (mode === 'normal' && phase === 'WORK' && time === 11) {
+                        document.getElementById('bodyTag').classList.add('WARNING');
+                        playSnd('snd' + (Math.floor(Math.random() * 2) + 1));
                     }
 
                     if (time < 0) {
-                        if (phase === 'PREP') {
-                            // Termina preparación -> Inicia Round 1
-                            phase = 'WORK';
-                            time = workTime;
-                            playSnd('sndA');
-                            document.body.className = "WORK";
-                            document.getElementById('label').innerText = "ROUND " + round;
-                            document.getElementById('round-count').innerText = `ROUND: ${round} / 12`;
-                        } 
-                        else if (phase === 'WORK') {
-                            // Termina Round -> Inicia Descanso
-                            phase = 'REST';
-                            time = restTime;
-                            playSnd('sndA');
-                            document.body.className = "REST";
-                            document.getElementById('label').innerText = "DESCANSO";
-                        } 
-                        else if (phase === 'REST') {
-                            // Termina Descanso -> Inicia Nuevo Round
-                            phase = 'WORK';
-                            round++;
-                            time = workTime;
-                            playSnd('sndA');
-                            document.body.className = "WORK";
-                            document.getElementById('label').innerText = "ROUND " + round;
-                            document.getElementById('round-count').innerText = `ROUND: ${round} / 12`;
+                        if (phase === 'WORK' && round >= maxRounds) {
+                            playSnd('sndA'); resetCounter(); return;
                         }
+                        playSnd('sndA');
+                        if (phase === 'PREP') { phase = 'WORK'; time = workT; } 
+                        else if (phase === 'WORK') { phase = 'REST'; time = restT; } 
+                        else { phase = 'WORK'; round++; time = workT; }
+                        
+                        document.getElementById('bodyTag').className = phase;
+                        document.getElementById('label').innerText = phase === 'WORK' ? "ROUND " + round : "DESCANSO";
+                        updateRoundDisplay();
                     }
-                    updateUI();
+                    updateDisplay();
                 }, 1000);
             }
         }
 
-        function updateUI() {
+        function updateDisplay() {
             let m = Math.floor(time / 60), s = time % 60;
             document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        function reset() {
-            location.reload();
         }
     </script>
 </body>
