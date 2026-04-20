@@ -17,29 +17,27 @@
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
         }
-        
         * { box-sizing: border-box; }
-        
         body { 
             margin: 0; background-color: var(--bg-color); color: #fff; 
             font-family: 'Inter', sans-serif;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            height: 100vh; text-align: center; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            min-height: 100vh; text-align: center; overflow-x: hidden; overflow-y: auto;
+            padding: 40px 10px;
             transition: background 0.5s ease;
         }
-
-        /* Dynamic Backgrounds based on phase */
-        body.PREP { background: radial-gradient(circle at center, #1a3845 0%, var(--bg-color) 70%); }
-        body.WORK { background: radial-gradient(circle at center, #35141d 0%, var(--bg-color) 70%); }
-        body.REST { background: radial-gradient(circle at center, #0f3020 0%, var(--bg-color) 70%); }
+        body.PREP  { background: radial-gradient(circle at center, #1a3845 0%, var(--bg-color) 70%); }
+        body.WORK  { background: radial-gradient(circle at center, #35141d 0%, var(--bg-color) 70%); }
+        body.REST  { background: radial-gradient(circle at center, #0f3020 0%, var(--bg-color) 70%); }
         body.WARNING { background: radial-gradient(circle at center, #3b3711 0%, var(--bg-color) 70%); }
 
+        /* ── Settings panel (gear) ── */
         .settings-panel {
             position: fixed; top: 0; left: 0; right: 0; 
-            background: rgba(13, 14, 21, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            background: rgba(13,14,21,0.92); backdrop-filter: blur(14px);
             padding: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;
             z-index: 100; border-bottom: 1px solid var(--glass-border);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             max-height: 100vh; overflow-y: auto;
         }
@@ -69,18 +67,10 @@
         }
         .color-picker::-webkit-color-swatch-wrapper { padding: 0; }
         .color-picker::-webkit-color-swatch { border: 2px solid white; border-radius: 50%; }
-        
-        #micToggle { background: #2d3748; color: #fff; border: none; border-radius: 6px; padding: 8px; cursor: pointer; font-weight: 600; font-size: 0.75rem; transition: background 0.3s; }
-        #micToggle.active { background: var(--rest-color); color: #000; }
 
-        #label { font-size: clamp(2rem, 6vw, 4rem); font-weight: 800; text-transform: uppercase; letter-spacing: 6px; margin-top: 60px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: color 0.3s; }
-        
-        #timer { 
-            font-family: 'Orbitron', monospace; font-weight: 900; 
-            line-height: 1; margin: 10px 0; transition: all 0.3s; 
-            text-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        
+        /* ── Main display ── */
+        #label { font-size: clamp(2rem,6vw,4rem); font-weight: 800; text-transform: uppercase; letter-spacing: 6px; margin-top: 60px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: color 0.3s; }
+        #timer { font-family: 'Orbitron', monospace; font-weight: 900; line-height: 1; margin: 10px 0; transition: all 0.3s; text-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .pulse-text { animation: pulse 1s infinite alternate; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
 
@@ -89,9 +79,8 @@
         .REST #label, .REST #timer { color: var(--rest-color); }
         .WARNING #label, .WARNING #timer { color: var(--warn-color); }
 
-        .stats { 
-            display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px;
-        }
+        /* ── Stats bar ── */
+        .stats { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
         .stat-box { 
             background: var(--glass-bg); padding: 10px 15px; border-radius: 12px; 
             min-width: 90px; border: 1px solid var(--glass-border); backdrop-filter: blur(5px);
@@ -100,158 +89,124 @@
         }
         .stat-box span { font-size: 1.5rem; font-weight: 800; font-family: 'Orbitron', monospace; margin-top: 4px; }
         .stat-label { font-size: 0.70rem; color: #aaa; letter-spacing: 1px; text-transform: uppercase; }
-
-        /* Animation for hits */
         @keyframes hitGlow {
-            0% { background: rgba(255, 255, 255, 0.8); transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            0%   { background: rgba(255,255,255,0.8); transform: scale(1.1); box-shadow: 0 0 20px rgba(255,255,255,0.5); }
             100% { background: var(--glass-bg); transform: scale(1); box-shadow: none; }
         }
         .hit-anim { animation: hitGlow 0.2s ease-out; }
 
+        /* ── Controls ── */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 90%; max-width: 400px; z-index: 10; }
         button.btn { 
             padding: 16px; cursor: pointer; border: none; font-weight: 800; text-transform: uppercase; 
             border-radius: 12px; font-family: 'Inter', sans-serif; letter-spacing: 1px; transition: all 0.2s;
         }
         button.btn:active { transform: scale(0.95); }
-
         #mainBtn { background: #fff; color: #000; grid-column: span 2; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
         #mainBtn:hover { background: #e0e0e0; }
+        .modeBtn { background: var(--glass-bg); color: #aaa; border: 1px solid var(--glass-border); font-size: 0.9rem; padding: 12px 8px; }
+        .active-mode { background: rgba(255,255,255,0.1) !important; color: #fff !important; border-color: rgba(255,255,255,0.4) !important; }
+        #resetBtn  { background: rgba(255,255,255,0.05); color: #fff; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2); margin-top: 5px; }
+        #finishBtn { background: rgba(255,42,95,0.12); color: #ff2a5f; font-size: 0.85rem; border: 1px solid rgba(255,42,95,0.35); margin-top: 5px; }
 
-        .modeBtn { background: var(--glass-bg); color: #aaa; border: 1px solid var(--glass-border); }
-        .active-mode { background: rgba(255,255,255,0.1) !important; color: #fff !important; border-color: rgba(255,255,255,0.4) !important; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
-        
-        #resetBtn { background: rgba(255,255,255,0.05); color: #fff; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2); margin-top: 5px; }
-        #finishBtn { background: rgba(255,42,95,0.1); color: #ff2a5f; font-size: 0.85rem; border: 1px solid rgba(255,42,95,0.3); margin-top: 5px; }
+        /* ── Mode collapsible panels (inline) ── */
+        .mode-panel-wrap { width: 90%; max-width: 400px; margin-bottom: 6px; }
+        .mode-panel {
+            background: rgba(13,14,21,0.75); border: 1px solid var(--glass-border);
+            border-radius: 12px; overflow: hidden;
+            max-height: 0; transition: max-height 0.35s ease, padding 0.2s ease;
+        }
+        .mode-panel.open { max-height: 300px; }
+        .mode-panel-inner { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; font-size: 0.84rem; }
+        .mode-panel-inner label { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .mode-panel-inner select { width: 120px; flex-shrink: 0; padding: 5px; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--glass-border); border-radius: 6px; }
+
+        /* ── Mic test overlay ── */
+        #micTestOverlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88); backdrop-filter: blur(10px);
+            z-index: 300; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+        }
+        #micTestOverlay.show { display: flex; }
+        #micTestMeter {
+            width: 280px; height: 28px; background: rgba(255,255,255,0.07);
+            border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-border); position: relative;
+        }
+        #micTestBar {
+            height: 100%; width: 0%; border-radius: 14px;
+            background: linear-gradient(90deg, #00e676, #ffea00, #ff2a5f);
+            transition: width 0.07s ease;
+        }
+        #micTestCount {
+            font-family: 'Orbitron', monospace; font-size: 5rem; font-weight: 900;
+            color: var(--work-color); line-height: 1;
+        }
+        #micTestLabel { font-size: 0.75rem; letter-spacing: 4px; color: #aaa; text-transform: uppercase; }
+        #micTestHitFlash { 
+            width: 120px; height: 120px; border-radius: 50%; 
+            background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center; font-size: 3rem;
+            transition: background 0.05s, box-shadow 0.05s;
+        }
+        #micTestHitFlash.flash { background: var(--work-color); box-shadow: 0 0 40px var(--work-color); }
 
         /* ── Story Card Modal ── */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.88); backdrop-filter: blur(10px);
-            display: flex; justify-content: center; align-items: center; z-index: 200;
-            transition: opacity 0.3s;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 200; transition: opacity 0.3s;
         }
         .modal.hidden { opacity: 0; pointer-events: none; }
-
-        /* Capture zone – everything inside .story-card gets exported */
         .story-card {
-            background: #0d0e15;
-            border-radius: 20px;
-            width: 90%; max-width: 420px;
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.07);
+            background: #0d0e15; border-radius: 20px;
+            width: 90%; max-width: 420px; overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.07);
         }
-
-        /* Gradient banner */
         .story-banner {
             background: linear-gradient(135deg, #1a0a10 0%, #350d1c 50%, #0d0e15 100%);
             border-bottom: 1px solid rgba(255,255,255,0.07);
-            padding: 28px 24px 22px;
-            position: relative;
-            overflow: hidden;
+            padding: 28px 24px 22px; position: relative; overflow: hidden;
         }
         .story-banner::before {
-            content: '';
-            position: absolute; top: -40px; right: -40px;
+            content: ''; position: absolute; top: -40px; right: -40px;
             width: 160px; height: 160px;
             background: radial-gradient(circle, var(--work-color) 0%, transparent 70%);
             opacity: 0.18; pointer-events: none;
         }
-        .story-banner-label {
-            font-size: 0.65rem; letter-spacing: 5px; color: var(--work-color);
-            text-transform: uppercase; font-weight: 700; margin-bottom: 6px;
-        }
-        .story-banner h2 {
-            margin: 0; font-size: 1.55rem; font-weight: 900; letter-spacing: 1px;
-            color: #fff; text-transform: uppercase; font-family: 'Bebas Neue', cursive;
-        }
-        .story-banner-date {
-            font-size: 0.7rem; color: rgba(255,255,255,0.35);
-            margin-top: 6px; letter-spacing: 2px;
-        }
-        .story-accent-bar {
-            height: 3px;
-            background: linear-gradient(90deg, var(--work-color), #ff6b35, transparent);
-        }
-
-        /* Stats grid */
-        .story-stats {
-            display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 1px; background: rgba(255,255,255,0.06);
-        }
-        .story-stat-cell {
-            background: #0d0e15;
-            padding: 18px 10px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+        .story-banner-label { font-size: 0.65rem; letter-spacing: 5px; color: var(--work-color); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; white-space: nowrap; }
+        .story-banner h2 { margin: 0; font-size: 1.55rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase; font-family: 'Bebas Neue', cursive; white-space: nowrap; }
+        .story-banner-date { font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-top: 6px; letter-spacing: 2px; }
+        .story-accent-bar { height: 3px; background: linear-gradient(90deg, var(--work-color), #ff6b35, transparent); }
+        .story-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.06); }
+        .story-stat-cell { background: #0d0e15; padding: 18px 10px; display: flex; flex-direction: column; align-items: center; }
         .story-stat-cell .s-icon { font-size: 1.1rem; margin-bottom: 5px; }
-        .story-stat-cell .s-val  {
-            font-size: 1.9rem; font-weight: 900;
-            font-family: 'Orbitron', monospace;
-            color: var(--work-color); line-height: 1;
-        }
-        .story-stat-cell .s-lbl  {
-            font-size: 0.62rem; color: #666;
-            text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px;
-        }
-
-        /* Chart section */
-        .story-chart-wrap {
-            padding: 16px 18px 20px;
-            background: #0d0e15;
-        }
-        .story-chart-title {
-            font-size: 0.65rem; color: #444;
-            text-transform: uppercase; letter-spacing: 3px;
-            margin-bottom: 10px;
-        }
-        .story-chart-container {
-            width: 100%; height: 160px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 8px; padding: 8px;
-        }
-        .story-footer {
-            background: #0a0b12;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding: 12px 18px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .story-footer-logo {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 1rem; letter-spacing: 3px;
-            color: rgba(255,255,255,0.2);
-        }
-        .story-footer-tag  {
-            font-size: 0.6rem; color: rgba(255,255,255,0.15);
-            letter-spacing: 2px;
-        }
-
-        /* Buttons outside the card */
-        .story-actions {
-            display: flex; gap: 10px; margin-top: 14px;
-            width: 90%; max-width: 420px;
-        }
+        .story-stat-cell .s-val  { font-size: 1.9rem; font-weight: 900; font-family: 'Orbitron', monospace; color: var(--work-color); line-height: 1; }
+        .story-stat-cell .s-lbl  { font-size: 0.62rem; color: #666; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
+        .story-chart-wrap { padding: 16px 18px 20px; background: #0d0e15; }
+        .story-chart-title { font-size: 0.65rem; color: #444; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; }
+        .story-chart-container { width: 100%; height: 160px; background: rgba(255,255,255,0.02); border-radius: 8px; padding: 8px; }
+        .story-footer { background: #0a0b12; border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; }
+        .story-footer-logo { font-family: 'Bebas Neue', cursive; font-size: 1rem; letter-spacing: 3px; color: rgba(255,255,255,0.2); }
+        .story-footer-tag  { font-size: 0.6rem; color: rgba(255,255,255,0.15); letter-spacing: 2px; }
+        .story-actions { display: flex; gap: 10px; margin-top: 14px; width: 90%; max-width: 420px; }
         .story-actions .btn { flex: 1; font-size: 0.9rem; }
+
+        /* History modal */
+        .modal-inner { background: rgba(13,14,21,0.97); border: 1px solid var(--glass-border); padding: 28px; border-radius: 16px; width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
     </style>
 </head>
 <body class="PREP" id="bodyTag">
 
-    <!-- Modal Resumen Final -->
+    <!-- ══ Summary Modal ══ -->
     <div id="summaryModal" class="modal hidden">
-
-        <!-- .story-card is the capture target -->
         <div class="story-card" id="storyCard">
-
-            <!-- Banner -->
             <div class="story-banner">
                 <div class="story-banner-label">Resumen de entrenamiento</div>
                 <h2>¡Misión Cumplida!</h2>
                 <div class="story-banner-date" id="modalSubtitle">BOXMASTER PRO</div>
             </div>
             <div class="story-accent-bar"></div>
-
-            <!-- Stats -->
             <div class="story-stats">
                 <div class="story-stat-cell">
                     <div class="s-icon">⏱️</div>
@@ -269,94 +224,73 @@
                     <div class="s-lbl">Kcal</div>
                 </div>
             </div>
-
-            <!-- Chart -->
             <div class="story-chart-wrap">
                 <div class="story-chart-title">Golpes por Round</div>
                 <div class="story-chart-container">
                     <canvas id="hitChart"></canvas>
                 </div>
             </div>
-
-            <!-- Footer branding -->
             <div class="story-footer">
                 <span class="story-footer-logo">BOXMASTER PRO</span>
                 <span class="story-footer-tag">boxmaster.app</span>
             </div>
         </div>
-
-        <!-- Buttons OUTSIDE the card (not exported) -->
         <div class="story-actions">
             <button id="saveImgBtn" class="btn" onclick="saveAsImage()" style="background:linear-gradient(135deg,#ff2a5f,#ff6b35); color:#fff;">📸 GUARDAR</button>
             <button class="btn" onclick="closeSummary()" style="background:rgba(255,255,255,0.07); color:#fff; border:1px solid rgba(255,255,255,0.18);">VOLVER</button>
         </div>
-
     </div>
 
-    <!-- Modal Historial -->
+    <!-- ══ History Modal ══ -->
     <div id="historyModal" class="modal hidden">
-        <div class="modal-content" style="max-height: 80vh; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
-            <h2 style="color:var(--prep-color)">📜 Historial</h2>
-            <div id="historyList" style="text-align:left; font-size:14px; margin-bottom:15px; display:flex; flex-direction:column; gap:8px;"></div>
-            <button class="btn" style="background:var(--glass-bg); color:#fff; width:100%; border:1px solid var(--glass-border);" onclick="document.getElementById('historyModal').classList.add('hidden');">CERRAR HISTORIAL</button>
+        <div class="modal-inner">
+            <h2 style="margin:0; color:var(--work-color); letter-spacing:2px;">📜 HISTORIAL</h2>
+            <div id="historyList" style="text-align:left; font-size:14px; display:flex; flex-direction:column; gap:8px;"></div>
+            <button class="btn" style="background:var(--glass-bg); color:#fff; border:1px solid var(--glass-border);" onclick="document.getElementById('historyModal').classList.add('hidden');">CERRAR</button>
         </div>
     </div>
 
+    <!-- ══ Mic Test Overlay ══ -->
+    <div id="micTestOverlay">
+        <div id="micTestLabel">Prueba de Sensibilidad</div>
+        <div id="micTestHitFlash">🥊</div>
+        <div id="micTestCount">0</div>
+        <div id="micTestMeter"><div id="micTestBar"></div></div>
+        <div style="font-size:0.7rem; color:#555; letter-spacing:2px;">GOLPES DETECTADOS</div>
+        <button class="btn" onclick="closeMicTest()" style="background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.2); margin-top:8px;">CERRAR PRUEBA</button>
+    </div>
+
+    <!-- ══ Gear button ══ -->
     <button id="toggleSettings" onclick="togglePanel()">⚙️</button>
 
+    <!-- ══ Settings Panel ══ -->
     <div class="settings-panel hidden" id="settingsPanel">
-        <div class="config-area" id="boxConfig">
-            <h3>🥊 Combate General</h3>
-            <label>Rounds: <select id="boxRounds" onchange="updateRoundDisplay()">
-                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-                <option value="10">10</option><option value="11">11</option><option value="12" selected>12</option>
-            </select></label>
-            <label>Descanso: <select id="boxRest"><option value="30">30s</option><option value="45">45s</option><option value="60" selected>1 min</option><option value="90">1.5 min</option></select></label>
-            <label>Aviso Final: <select id="warnTimeSelect">
-                <option value="10" selected>10 Segundos</option>
-                <option value="30">30 Segundos</option>
-            </select></label>
-        </div>
-
-        <div class="config-area" id="infConfig">
-            <h3>🔥 Infierno</h3>
-            <label>Rounds: <select id="infRounds" onchange="updateRoundDisplay()"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="30">30</option><option value="50">50</option></select></label>
-            <label>Trabajo: <select id="infWork"><option value="15">15s</option><option value="20" selected>20s</option><option value="30">30s</option><option value="45">45s</option></select></label>
-            <label>Descanso: <select id="infRest"><option value="10" selected>10s</option><option value="15">15s</option><option value="20">20s</option></select></label>
-        </div>
 
         <div class="config-area">
             <h3>🎙️ Sensor Bolsa</h3>
-            <label style="display:flex; justify-content:space-between;">Filtro Sensibilidad: <span id="micSensVal" style="color:var(--prep-color); font-weight:bold;">70</span></label>
+            <label style="display:flex; justify-content:space-between;">Sensibilidad: <span id="micSensVal" style="color:var(--prep-color); font-weight:bold;">70</span></label>
             <input type="range" id="micSens" min="15" max="120" value="70" oninput="document.getElementById('micSensVal').innerText = this.value;">
-            <button id="micToggle" class="btn" style="font-size:10px; padding:8px; margin-top:5px; background:#444;" onclick="initMic()">ACTIVAR MICRÓFONO</button>
+            <button id="micToggle" class="btn" style="font-size:10px; padding:8px; background:#444;" onclick="initMic()">ACTIVAR MICRÓFONO</button>
+            <button class="btn" style="font-size:10px; padding:8px; background:rgba(255,234,0,0.1); color:var(--warn-color); border:1px solid rgba(255,234,0,0.3);" onclick="openMicTest()">🎯 PROBAR SENSIBILIDAD</button>
         </div>
-        
+
+
         <div class="config-area">
-            <h3>🌩️ Preferencias</h3>
-            <label>Preparación: <select id="prepTimeSelect">
-                <option value="10">10 Segundos</option>
-                <option value="20">20 Segundos</option>
-                <option value="30" selected>30 Segundos</option>
-                <option value="60">1 Minuto</option>
-                <option value="120">2 Minutos</option>
-            </select></label>
+            <h3>🔥 KCAL</h3>
+            <label>Visualización:
+                <select id="kcalToggle" onchange="updateKcalDisplay()"><option value="on" selected>Visible</option><option value="off">Oculto</option></select>
+            </label>
             <label>Modalidad:
                 <select id="kcalMode">
-                    <option value="bolsa" selected>Bolsa (Golpes y Energía)</option>
-                    <option value="sombra">Sombra (Tiempo Oculto)</option>
+                    <option value="bolsa" selected>Bolsa (Golpes)</option>
+                    <option value="sombra">Sombra (Tiempo)</option>
                 </select>
-            </label>
-            <label>KCAL en Pantalla:
-                <select id="kcalToggle" onchange="updateKcalDisplay()"><option value="on" selected>Visible</option><option value="off">Oculto</option></select>
             </label>
         </div>
 
         <div class="config-area">
             <h3>🎨 Visual</h3>
-            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                 <label style="font-size:12px;">Letra</label>
                 <select id="fontSelect" onchange="changeFont(this.value)" style="width:85px; padding:2px;">
                     <option value="'Bebas Neue', cursive" selected>Bebas</option>
@@ -373,23 +307,23 @@
                     <option value="'Teko', sans-serif">Teko</option>
                 </select>
             </div>
-            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:5px;">
-                <label style="font-size:12px;">Color Primario</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <label style="font-size:12px;">Color</label>
                 <input type="color" id="timerColor" class="color-picker" value="#ff2a5f" oninput="changeColorContext(this.value)">
             </div>
-            <div style="display:flex; justify-content: space-between; align-items:center;">
-                <label style="font-size:12px;">Zoom Reloj</label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label style="font-size:12px;">Zoom</label>
                 <input type="range" id="sizeRange" min="15" max="35" value="25" style="width:75px;" oninput="document.getElementById('timer').style.fontSize = this.value + 'vw'">
             </div>
         </div>
 
-        <button class="btn" style="width:100%; max-width:400px; background:rgba(0, 229, 255, 0.1); color:var(--prep-color); border:1px solid rgba(0, 229, 255, 0.4);" onclick="showHistoryModal()">📜 VER HISTORIAL</button>
-
+        <button class="btn" style="width:100%; max-width:400px; background:rgba(0,229,255,0.08); color:var(--prep-color); border:1px solid rgba(0,229,255,0.3);" onclick="showHistoryModal()">📜 VER HISTORIAL</button>
     </div>
 
-    <div id="label">PREPARACIÓN</div>
+    <!-- ══ Main Display ══ -->
+    <div id="label" style="margin-top:auto;">PREPARACIÓN</div>
     <div id="timer" style="font-size: 25vw;">00:30</div>
-    
+
     <div class="stats">
         <div class="stat-box">
             <span id="round-val">1/12</span>
@@ -399,7 +333,7 @@
             <span id="kcal-val">0</span>
             <div class="stat-label">KCAL</div>
         </div>
-        <div class="stat-box" id="gpm-box">
+        <div class="stat-box">
             <span id="gpm-val" style="color:var(--warn-color);">0</span>
             <div class="stat-label">GPM</div>
         </div>
@@ -408,13 +342,63 @@
             <div class="stat-label">GOLPES</div>
         </div>
     </div>
-    
-    <div class="controls">
+
+    <!-- ══ Controls ══ -->
+    <div class="controls" style="margin-bottom:auto;">
         <button id="mainBtn" class="btn" onclick="toggle()">EMPEZAR</button>
+
+        <!-- Botones de Modo -->
         <button id="modeNormal" class="btn modeBtn active-mode" onclick="setMode('normal')">🥊 BOXEO</button>
         <button id="modeInferno" class="btn modeBtn" onclick="setMode('inferno')">🔥 INFIERNO</button>
-        <button id="resetBtn" class="btn" onclick="resetCounter()">REINICIAR</button>
-        <button id="finishBtn" class="btn" onclick="forceFinish()">FINALIZAR</button>
+        
+        <!-- Contenedor full-width de los Paneles (Así no se aprietan en 1 sola columna) -->
+        <div style="grid-column: span 2;">
+            <div class="mode-panel" id="panelNormal">
+                <div class="mode-panel-inner">
+                    <label>Rounds: <select id="boxRounds" onchange="updateRoundDisplay()">
+                        <option>1</option><option>2</option><option>3</option><option>4</option>
+                        <option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option value="12" selected>12</option>
+                    </select></label>
+                    <label>Descanso: <select id="boxRest">
+                        <option value="30">30s</option><option value="45">45s</option>
+                        <option value="60" selected>1 min</option><option value="90">1.5 min</option>
+                    </select></label>
+                    <label>Preparación: <select id="prepTimeBox" onchange="syncPrepTime('prepTimeBox')">
+                        <option value="10">10 seg</option><option value="20">20 seg</option>
+                        <option value="30" selected>30 seg</option><option value="60">1 min</option><option value="120">2 min</option>
+                    </select></label>
+                    <label>Aviso ROCKY: <select id="warnTimeSelect">
+                        <option value="10" selected>10 seg</option>
+                        <option value="30">30 seg</option>
+                    </select></label>
+                </div>
+            </div>
+
+            <div class="mode-panel" id="panelInferno">
+                <div class="mode-panel-inner">
+                    <label>Rounds: <select id="infRounds" onchange="updateRoundDisplay()">
+                        <option value="5">5</option><option value="10" selected>10</option>
+                        <option value="15">15</option><option value="20">20</option>
+                        <option value="30">30</option><option value="50">50</option>
+                    </select></label>
+                    <label>Trabajo: <select id="infWork">
+                        <option value="15">15s</option><option value="20" selected>20s</option>
+                        <option value="30">30s</option><option value="45">45s</option>
+                    </select></label>
+                    <label>Descanso: <select id="infRest">
+                        <option value="10" selected>10s</option><option value="15">15s</option><option value="20">20s</option>
+                    </select></label>
+                    <label>Preparación: <select id="prepTimeInf" onchange="syncPrepTime('prepTimeInf')">
+                        <option value="10">10 seg</option><option value="20">20 seg</option>
+                        <option value="30" selected>30 seg</option><option value="60">1 min</option><option value="120">2 min</option>
+                    </select></label>
+                </div>
+            </div>
+        </div>
+
+        <button id="resetBtn"  class="btn" onclick="resetCounter()">REINICIAR</button>
+        <button id="finishBtn" class="btn" onclick="forceFinish()">FINALIZAR 🏁</button>
     </div>
 
     <!-- Audios -->
@@ -425,87 +409,103 @@
     <script>
         let workT = 180, restT = 60, prepT = 30, time = 30;
         let round = 1, maxRounds = 12, phase = 'PREP', active = false, timerId = null, kcal = 0;
-        let hitsPerRound = [];
-        let hitsThisRound = 0;
-        let chartInstance = null;
+        let hitsPerRound = [], hitsThisRound = 0, chartInstance = null;
         let mode = 'normal', wakeLock = null;
-
-        // Variables Micrófono
         let hitCount = 0, micCtx, analyser, processor;
-        let lastHitTime = 0, micBlocked = false;
+        let micBlocked = false;
+        let micTestMode = false, micTestCount = 0;
+        let lastHitTime = 0;
+        const HIT_COOLDOWN_MS = 350;  // Debounce time prevents double counts
 
-        // -------------------------
-        // Manejador de Ajustes & Storage
-        // -------------------------
-        const settingsKeys = ['boxRounds', 'boxRest', 'warnTimeSelect', 'infRounds', 'infWork', 'infRest', 'micSens', 'prepTimeSelect', 'kcalMode', 'kcalToggle', 'fontSelect', 'sizeRange', 'timerColor'];
-        
+        // ── LocalStorage ──
+        const settingsKeys = ['boxRounds','boxRest','warnTimeSelect','infRounds','infWork','infRest','micSens','prepTimeBox','prepTimeInf','kcalMode','kcalToggle','fontSelect','sizeRange','timerColor'];
+
         function saveSettings() {
             let s = {};
-            settingsKeys.forEach(id => {
-                let el = document.getElementById(id);
-                if (el) s[id] = el.value;
-            });
+            settingsKeys.forEach(id => { let el = document.getElementById(id); if(el) s[id] = el.value; });
             localStorage.setItem('boxMasterSettings', JSON.stringify(s));
         }
 
         function loadSettings() {
             let sStr = localStorage.getItem('boxMasterSettings');
-            if(sStr) {
-                let s = JSON.parse(sStr);
-                settingsKeys.forEach(id => {
-                    if (s[id]) {
-                        let el = document.getElementById(id);
-                        if (el) el.value = s[id];
-                    }
-                });
-                
-                // Aplicamos restaurando los efectos de la UI
-                if(s['timerColor']) changeColorContext(s['timerColor']);
-                if(s['fontSelect']) changeFont(s['fontSelect']);
-                if(s['sizeRange']) document.getElementById('timer').style.fontSize = s['sizeRange'] + 'vw';
-                if(s['micSens']) document.getElementById('micSensVal').innerText = s['micSens'];
-                updateKcalDisplay();
+            if(!sStr) return;
+            let s = JSON.parse(sStr);
+            settingsKeys.forEach(id => { if(s[id]){ let el = document.getElementById(id); if(el) el.value = s[id]; }});
+            if(s['timerColor']) changeColorContext(s['timerColor']);
+            if(s['fontSelect']) changeFont(s['fontSelect']);
+            if(s['sizeRange']) document.getElementById('timer').style.fontSize = s['sizeRange'] + 'vw';
+            if(s['micSens']) document.getElementById('micSensVal').innerText = s['micSens'];
+            // Sync prep time selectors
+            if(s['prepTimeBox']) {
+                document.getElementById('prepTimeBox').value = s['prepTimeBox'];
+                document.getElementById('prepTimeInf').value = s['prepTimeBox'];
             }
+            updateKcalDisplay();
+        }
+
+        function syncPrepTime(sourceId) {
+            let val = document.getElementById(sourceId).value;
+            document.getElementById('prepTimeBox').value = val;
+            document.getElementById('prepTimeInf').value = val;
+            saveSettings();
         }
 
         document.getElementById('settingsPanel').addEventListener('change', saveSettings);
+        // Also save when inline panels change
+        document.querySelectorAll('.mode-panel select').forEach(el => el.addEventListener('change', saveSettings));
 
         function saveWorkoutToHistory(f_rounds, f_hits, f_kcal) {
             let d = new Date();
-            let dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString([],{hour: '2-digit', minute:'2-digit'});
-            let entry = { date: dateStr, mode: (mode === 'normal' ? 'BOXEO' : 'INFIERNO'), rounds: f_rounds, hits: f_hits, kcal: f_kcal };
-            let histStr = localStorage.getItem('boxMasterHistory');
-            let histArr = histStr ? JSON.parse(histStr) : [];
+            let dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+            let entry = {date: dateStr, mode:(mode==='normal'?'BOXEO':'INFIERNO'), rounds:f_rounds, hits:f_hits, kcal:f_kcal};
+            let histArr = JSON.parse(localStorage.getItem('boxMasterHistory') || '[]');
             histArr.unshift(entry);
-            if (histArr.length > 20) histArr.pop(); // Mantener ultimos 20
+            if(histArr.length > 20) histArr.pop();
             localStorage.setItem('boxMasterHistory', JSON.stringify(histArr));
         }
 
         function showHistoryModal() {
-            let histStr = localStorage.getItem('boxMasterHistory');
-            let histArr = histStr ? JSON.parse(histStr) : [];
-            let htmlStr = '';
-            if (histArr.length === 0) {
-                htmlStr = '<div style="color:#aaa; text-align:center;">Aún no hay entrenamientos guardados.</div>';
-            } else {
-                histArr.forEach(h => {
-                    htmlStr += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; border-left:4px solid var(--work-color)">
-                        <div style="font-size:0.75rem; color:#aaa; margin-bottom:4px;">${h.date} - Modo ${h.mode}</div>
-                        <div style="font-weight:800; font-family:'Inter', sans-serif; font-size:1.05rem;">
-                           🥊 ${h.hits} <span style="margin:0 10px; color:#555">|</span> ⚡ ${h.kcal} kcal <span style="margin:0 10px; color:#555">|</span> ⏱️ ${h.rounds} Rounds
-                        </div>
-                    </div>`;
-                });
-            }
-            document.getElementById('historyList').innerHTML = htmlStr;
+            let histArr = JSON.parse(localStorage.getItem('boxMasterHistory') || '[]');
+            let html = histArr.length === 0
+                ? '<div style="color:#aaa;text-align:center;">Aún no hay entrenamientos guardados.</div>'
+                : histArr.map((h, i) => `<div style="background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;border-left:4px solid var(--work-color)">
+                    <div style="font-size:0.75rem;color:#aaa;margin-bottom:4px;">${h.date} · Modo ${h.mode}</div>
+                    <div style="font-weight:800;font-size:1.05rem;">🥊 ${h.hits} <span style="margin:0 8px;color:#555">|</span> ⚡ ${h.kcal} kcal <span style="margin:0 8px;color:#555">|</span> ⏱️ ${h.rounds} Rds</div>
+                    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                         <button style="background:rgba(255,255,255,0.1); border:none; border-radius:4px; padding:6px 12px; color:#fff; cursor:pointer; font-size:0.75rem; font-weight:bold;" onclick="loadHistoryToSummary(${i})">📸 COMPARTIR</button>
+                         <button style="background:rgba(255,42,95,0.2); border:none; border-radius:4px; padding:6px 12px; color:#ff2a5f; cursor:pointer;" onclick="deleteHistory(${i})">🗑️</button>
+                    </div>
+                  </div>`).join('');
+            document.getElementById('historyList').innerHTML = html;
             document.getElementById('settingsPanel').classList.add('hidden');
             document.getElementById('historyModal').classList.remove('hidden');
         }
 
-        // -------------------------
-        // Funciones UI & Cronómetro
-        // -------------------------
-        
+        function deleteHistory(index) {
+            let histArr = JSON.parse(localStorage.getItem('boxMasterHistory') || '[]');
+            histArr.splice(index, 1);
+            localStorage.setItem('boxMasterHistory', JSON.stringify(histArr));
+            showHistoryModal();
+        }
+
+        function loadHistoryToSummary(index) {
+            let histArr = JSON.parse(localStorage.getItem('boxMasterHistory') || '[]');
+            let h = histArr[index];
+            if(!h) return;
+            
+            document.getElementById('sum-rounds').innerText = h.rounds;
+            document.getElementById('sum-hits').innerText = h.hits;
+            document.getElementById('sum-kcal').innerText = h.kcal;
+            document.getElementById('modalSubtitle').innerText = h.date + ' · Modo ' + h.mode;
+            
+            document.getElementById('historyModal').classList.add('hidden');
+            document.getElementById('summaryModal').classList.remove('hidden');
+            
+            // Ocultamos el chart porque el historial no guarda el array de golpes/round
+            document.querySelector('.story-chart-wrap').style.display = 'none';
+        }
+
+        // ── UI helpers ──
         function changeColorContext(hex) {
             document.documentElement.style.setProperty('--work-color', hex);
             document.documentElement.style.setProperty('--prep-color', hex);
@@ -518,290 +518,316 @@
             document.getElementById('sum-kcal-container').style.display = show ? 'flex' : 'none';
         }
 
-        function changeFont(fontName) {
-            document.getElementById('timer').style.fontFamily = fontName;
-            document.getElementById('label').style.fontFamily = fontName;
-            document.querySelectorAll('.stat-box span').forEach(el => el.style.fontFamily = fontName);
+        function changeFont(f) {
+            document.getElementById('timer').style.fontFamily = f;
+            document.getElementById('label').style.fontFamily = f;
+            document.querySelectorAll('.stat-box span').forEach(el => el.style.fontFamily = f);
         }
 
         function togglePanel() { document.getElementById('settingsPanel').classList.toggle('hidden'); }
 
         function updateRoundDisplay() {
-            maxRounds = (mode === 'normal') ? parseInt(document.getElementById('boxRounds').value) : parseInt(document.getElementById('infRounds').value);
+            maxRounds = (mode === 'normal')
+                ? parseInt(document.getElementById('boxRounds').value)
+                : parseInt(document.getElementById('infRounds').value);
             document.getElementById('round-val').innerText = `${round}/${maxRounds}`;
         }
 
-        async function requestWakeLock() {
-            try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {}
+        // ── Mode buttons with inline panel toggle ──
+        function setMode(newMode) {
+            if(active) return;
+            mode = newMode;
+            document.querySelectorAll('.modeBtn').forEach(b => b.classList.remove('active-mode'));
+
+            if(mode === 'inferno') {
+                workT = parseInt(document.getElementById('infWork').value);
+                restT = parseInt(document.getElementById('infRest').value);
+                document.getElementById('modeInferno').classList.add('active-mode');
+                document.getElementById('panelInferno').classList.toggle('open');
+                document.getElementById('panelNormal').classList.remove('open');
+            } else {
+                workT = 180;
+                restT = parseInt(document.getElementById('boxRest').value);
+                document.getElementById('modeNormal').classList.add('active-mode');
+                document.getElementById('panelNormal').classList.toggle('open');
+                document.getElementById('panelInferno').classList.remove('open');
+            }
+            updateRoundDisplay();
+            saveSettings();
         }
 
-        async function releaseWakeLock() {
-            if (wakeLock !== null) { await wakeLock.release(); wakeLock = null; }
-        }
+        // ── Wake lock ──
+        async function requestWakeLock() { try { if('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
+        async function releaseWakeLock() { if(wakeLock){ await wakeLock.release(); wakeLock = null; } }
 
+        // ── Audio ──
         function playSnd(id) {
             micBlocked = true;
-            const el = document.getElementById(id);
-            if (el) { el.currentTime = 0; el.play().catch(e => console.log("Audio", e)); }
+            let el = document.getElementById(id);
+            if(el){ el.currentTime=0; el.play().catch(()=>{}); }
             setTimeout(() => { micBlocked = false; }, 2000);
         }
 
+        // ── Microphone ──
         async function initMic() {
-            if (micCtx) return;
+            if(micCtx) return;
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 micCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = micCtx.createAnalyser();
                 const source = micCtx.createMediaStreamSource(stream);
+                
+                // 2048 muestras -> callback cada ~46ms (más rápido y responsivo)
                 processor = micCtx.createScriptProcessor(2048, 1, 1);
-                analyser.fftSize = 256;
+                analyser.fftSize = 256; 
                 source.connect(analyser);
                 analyser.connect(processor);
                 processor.connect(micCtx.destination);
 
                 processor.onaudioprocess = () => {
-                    if (!active || phase !== 'WORK' || micBlocked) return;
                     const data = new Uint8Array(analyser.frequencyBinCount);
                     analyser.getByteFrequencyData(data);
-                    
+
+                    // Bass filter clásico (0-3). Mide la vibración pura (incluyendo DC y sub-bajos)
                     let sum = 0;
-                    // BASS FILTER: limitamos a los primeros 4 bines de frecuencia (aprox 0Hz - 680Hz).
-                    // Esto aisla sonidos sordos / golpes pesados e ignora ruidos chirriantes o agudos.
                     for(let i = 0; i < 4; i++) {
                         sum += data[i];
                     }
-                    let avg = sum / 4; 
-                    
-                    let sens = 150 - document.getElementById('micSens').value;
+                    let avg = sum / 4;
                     let now = performance.now();
+
+                    let sensSlider = parseInt(document.getElementById('micSens').value);
                     
-                    if (avg > sens && (now - lastHitTime) > 130) {
-                        hitCount++;
-                        hitsThisRound++;
-                        document.getElementById('hits-val').innerText = hitCount;
+                    // thresh_high: umbral para DETECTAR el golpe inicial
+                    let threshHigh = 160 - sensSlider;
+
+                    // ── Mic Test Mode ──
+                    if(micTestMode) {
+                        let pct = Math.min(100, (avg / threshHigh) * 80);
+                        document.getElementById('micTestBar').style.width = pct + '%';
                         
-                        let kMode = document.getElementById('kcalMode').value;
-                        if (kMode === 'bolsa') {
+                        if(avg > threshHigh && (now - lastHitTime) > HIT_COOLDOWN_MS) {
+                            lastHitTime = now;
+                            micTestCount++;
+                            document.getElementById('micTestCount').innerText = micTestCount;
+                            let flash = document.getElementById('micTestHitFlash');
+                            flash.classList.add('flash');
+                            setTimeout(() => flash.classList.remove('flash'), 120);
+                        }
+                        return;
+                    }
+
+                    // ── Normal combat mode ──
+                    if(!active || phase !== 'WORK' || micBlocked) return;
+
+                    if(avg > threshHigh && (now - lastHitTime) > HIT_COOLDOWN_MS) {
+                        lastHitTime = now;
+                        // ── CONTAR GOLPE ──
+                        hitCount++; hitsThisRound++;
+                        document.getElementById('hits-val').innerText = hitCount;
+                        if(document.getElementById('kcalMode').value === 'bolsa') {
                             kcal += 0.15;
                             document.getElementById('kcal-val').innerText = Math.floor(kcal);
                         }
-                        lastHitTime = now;
-                        
-                        const hitBox = document.getElementById('hit-box');
+                        let hitBox = document.getElementById('hit-box');
                         hitBox.classList.remove('hit-anim');
                         void hitBox.offsetWidth;
                         hitBox.classList.add('hit-anim');
                     }
                 };
-                const toggleBtn = document.getElementById('micToggle');
-                toggleBtn.innerText = "🎙️ SEÑAL LIMPIA";
-                toggleBtn.style.background = "var(--rest-color)"; toggleBtn.style.color = "#000";
-            } catch (e) { console.log(e); }
+
+                let btn = document.getElementById('micToggle');
+                btn.innerText = "🎙️ ACTIVO";
+                btn.style.background = "var(--rest-color)";
+                btn.style.color = "#000";
+            } catch(e) { console.log(e); }
         }
 
-        function setMode(newMode) {
-            if(active) return;
-            mode = newMode;
-            document.querySelectorAll('.modeBtn').forEach(b => b.classList.remove('active-mode'));
-            if(mode === 'inferno') {
-                workT = parseInt(document.getElementById('infWork').value); restT = parseInt(document.getElementById('infRest').value);
-                document.getElementById('modeInferno').classList.add('active-mode');
-            } else {
-                workT = parseInt(document.getElementById('boxRounds').value) ? 180 : 180; // Hardcode normal length
-                restT = parseInt(document.getElementById('boxRest').value);
-                document.getElementById('modeNormal').classList.add('active-mode');
-            }
-            updateRoundDisplay(); saveSettings();
+        // ── Mic Test ──
+        function openMicTest() {
+            document.getElementById('settingsPanel').classList.add('hidden');
+            initMic().then ? initMic().then(() => _startMicTest()) : _startMicTest();
+        }
+        async function _startMicTest() {
+            if(!micCtx) await initMic();
+            micTestCount = 0;
+            document.getElementById('micTestCount').innerText = '0';
+            micTestMode = true;
+            document.getElementById('micTestOverlay').classList.add('show');
+        }
+        function closeMicTest() {
+            micTestMode = false;
+            document.getElementById('micTestOverlay').classList.remove('show');
+            document.getElementById('micTestBar').style.width = '0%';
         }
 
+        // ── Timer control ──
         function resetCounter() {
             clearInterval(timerId); active = false;
-            prepT = parseInt(document.getElementById('prepTimeSelect').value) || 30;
+            prepT = parseInt(document.getElementById('prepTimeBox').value) || 30;
             time = prepT; round = 1; kcal = 0; hitCount = 0; phase = 'PREP';
             hitsPerRound = []; hitsThisRound = 0;
-            
-            document.getElementById('kcal-val').innerText = "0";
-            document.getElementById('gpm-val').innerText = "0";
-            document.getElementById('hits-val').innerText = "0";
-            document.getElementById('mainBtn').innerText = "EMPEZAR";
-            document.getElementById('bodyTag').className = "PREP";
-            document.getElementById('label').innerText = "PREPARACIÓN";
+            document.getElementById('kcal-val').innerText = '0';
+            document.getElementById('gpm-val').innerText = '0';
+            document.getElementById('hits-val').innerText = '0';
+            document.getElementById('mainBtn').innerText = 'EMPEZAR';
+            document.getElementById('bodyTag').className = 'PREP';
+            document.getElementById('label').innerText = 'PREPARACIÓN';
             document.getElementById('timer').classList.remove('pulse-text');
             releaseWakeLock();
             updateRoundDisplay(); updateDisplay();
         }
 
         function forceFinish() {
-            // Impedir resumen vacio
-            if (hitCount === 0 && round === 1 && phase === 'PREP') return; 
+            // Allow finishing if any round started (not just in PREP with nothing done)
+            if(phase === 'PREP' && round === 1 && hitCount === 0 && !active) return;
+            
             clearInterval(timerId);
             active = false;
-            document.getElementById('mainBtn').innerText = "EMPEZAR";
-            document.getElementById('timer').classList.remove('pulse-text');
             releaseWakeLock();
+            document.getElementById('mainBtn').innerText = 'EMPEZAR';
+            document.getElementById('timer').classList.remove('pulse-text');
             
-            if (phase === 'WORK' && hitsThisRound > 0) {
+            // Save current round hits if we were working
+            if(phase === 'WORK' && hitsThisRound > 0) {
                 hitsPerRound.push(hitsThisRound);
+            }
+            // If no round data collected but we did rounds, at least count them
+            if(hitsPerRound.length === 0 && round >= 1) {
+                for(let i = 0; i < round; i++) hitsPerRound.push(0);
             }
             showSummary();
         }
 
         function showSummary() {
-            let rc = hitsPerRound.length > 0 ? hitsPerRound.length : round; 
-            let totHits = hitCount;
-            let finalKcal = Math.floor(kcal);
-            
+            let rc = Math.max(hitsPerRound.length, round - (phase === 'PREP' ? 1 : 0));
             document.getElementById('sum-rounds').innerText = rc;
-            document.getElementById('sum-hits').innerText = totHits;
-            document.getElementById('sum-kcal').innerText = finalKcal;
+            document.getElementById('sum-hits').innerText = hitCount;
+            document.getElementById('sum-kcal').innerText = Math.floor(kcal);
+            saveWorkoutToHistory(rc, hitCount, Math.floor(kcal));
             
-            saveWorkoutToHistory(rc, totHits, finalKcal);
-            
+            document.querySelector('.story-chart-wrap').style.display = 'block';
             document.getElementById('summaryModal').classList.remove('hidden');
             renderChart();
         }
 
-        function saveAsImage() {
-            const btn = document.getElementById('saveImgBtn');
-            const original = btn.innerText;
-            btn.innerText = 'Generando...';
-            btn.disabled = true;
-
-            const d = new Date();
-            document.getElementById('modalSubtitle').innerText =
-                d.toLocaleDateString() + ' · ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            const target = document.getElementById('storyCard');
-            html2canvas(target, {
-                backgroundColor: '#0d0e15',
-                scale: 2,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'BoxMasterPro_' + Date.now() + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                btn.innerText = '✅ Guardado!';
-                setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 2500);
-            }).catch(err => {
-                console.error(err);
-                btn.innerText = original; btn.disabled = false;
-            });
-        }
-
         function closeSummary() {
             document.getElementById('summaryModal').classList.add('hidden');
-            resetCounter(); 
+            resetCounter();
         }
 
         function renderChart() {
             const ctx = document.getElementById('hitChart').getContext('2d');
-            if (chartInstance) { chartInstance.destroy(); }
-            
-            const labels = hitsPerRound.length > 0 ? hitsPerRound.map((_, i) => 'Rd ' + (i + 1)) : ['Ninguno'];
-            const data = hitsPerRound.length > 0 ? hitsPerRound : [0];
-            const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--work-color').trim() || '#ff2a5f';
-            
+            if(chartInstance) chartInstance.destroy();
+            const labels = hitsPerRound.length > 0 ? hitsPerRound.map((_,i) => 'Rd '+(i+1)) : ['—'];
+            const data   = hitsPerRound.length > 0 ? hitsPerRound : [0];
+            const color  = getComputedStyle(document.documentElement).getPropertyValue('--work-color').trim() || '#ff2a5f';
             chartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Golpes lanzados',
-                        data: data,
-                        backgroundColor: themeColor,
-                        borderRadius: 4
-                    }]
-                },
+                data: { labels, datasets: [{ label:'Golpes', data, backgroundColor: color, borderRadius: 4 }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#aaa', stepSize: 10 } },
-                        x: { grid: { display: false }, ticks: { color: '#aaa' } }
+                        y: { beginAtZero:true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#aaa',stepSize:10} },
+                        x: { grid:{display:false}, ticks:{color:'#aaa'} }
                     },
                     plugins: { legend: { display: false } }
                 }
             });
         }
 
+        function saveAsImage() {
+            const btn = document.getElementById('saveImgBtn');
+            const target = document.getElementById('storyCard');
+            const original = btn.innerText;
+            btn.innerText = 'Generando...'; btn.disabled = true;
+            
+            const origW = target.style.width;
+            target.style.width = '400px';
+            
+            // Si el chart no está oculto, significa que es un resumen fresco (sobreescribimos con hora actual)
+            // Si está oculto, viene del historial (dejamos quieta la fecha que ya pusimos)
+            if (document.querySelector('.story-chart-wrap').style.display !== 'none') {
+                const d = new Date();
+                document.getElementById('modalSubtitle').innerText =
+                    d.toLocaleDateString() + ' · ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+            }
+
+            html2canvas(target, { backgroundColor:'#0d0e15', scale:2, useCORS:true, logging:false, width:400 })
+                .then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'BoxMasterPro_' + Date.now() + '.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    target.style.width = origW;
+                    btn.innerText = '✅ Guardado!';
+                    setTimeout(() => { btn.innerText = original; btn.disabled = false; }, 2500);
+                })
+                .catch(err => { console.error(err); target.style.width = origW; btn.innerText = original; btn.disabled = false; });
+        }
+
         async function toggle() {
-            if (!active) {
-                document.querySelectorAll('audio').forEach(a => {
-                    a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
-                });
+            if(!active) {
+                document.querySelectorAll('audio').forEach(a => { a.play().then(() => { a.pause(); a.currentTime=0; }).catch(()=>{}); });
                 requestWakeLock();
-                // Actualizar config
-                workT = (mode === 'normal') ? 180 : parseInt(document.getElementById('infWork').value);
-                restT = (mode === 'normal') ? parseInt(document.getElementById('boxRest').value) : parseInt(document.getElementById('infRest').value);
+                workT = (mode==='normal') ? 180 : parseInt(document.getElementById('infWork').value);
+                restT = (mode==='normal') ? parseInt(document.getElementById('boxRest').value) : parseInt(document.getElementById('infRest').value);
+                // Close any open mode panels when starting
+                document.getElementById('panelNormal').classList.remove('open');
+                document.getElementById('panelInferno').classList.remove('open');
             } else {
                 releaseWakeLock();
             }
 
             document.getElementById('settingsPanel').classList.add('hidden');
-            
-            if (active) {
+
+            if(active) {
                 clearInterval(timerId); active = false;
-                document.getElementById('mainBtn').innerText = "REANUDAR";
+                document.getElementById('mainBtn').innerText = 'REANUDAR';
                 document.getElementById('timer').classList.remove('pulse-text');
             } else {
                 active = true;
-                document.getElementById('mainBtn').innerText = "PAUSA";
-                
+                document.getElementById('mainBtn').innerText = 'PAUSA';
+
                 timerId = setInterval(() => {
                     time--;
-                    
-                    if(phase === 'WORK') { 
+
+                    if(phase === 'WORK') {
                         let kMode = document.getElementById('kcalMode').value;
-                        if (kMode === 'sombra') { kcal += 0.166; } else { kcal += 0.083; }
-                        document.getElementById('kcal-val').innerText = Math.floor(kcal); 
-                        
+                        kcal += (kMode === 'sombra') ? 0.166 : 0.083;
+                        document.getElementById('kcal-val').innerText = Math.floor(kcal);
                         let elapsed = workT - time;
-                        if(elapsed > 0 && hitsThisRound > 0) {
-                            let currGpm = Math.floor((hitsThisRound / elapsed) * 60);
-                            document.getElementById('gpm-val').innerText = currGpm;
-                        }
+                        if(elapsed > 0 && hitsThisRound > 0)
+                            document.getElementById('gpm-val').innerText = Math.floor((hitsThisRound / elapsed) * 60);
                     }
-                    
+
                     let warnT = parseInt(document.getElementById('warnTimeSelect').value) || 10;
-                    if (mode === 'normal' && phase === 'WORK' && time === warnT) {
+                    if(mode === 'normal' && phase === 'WORK' && time === warnT) {
                         document.getElementById('bodyTag').className = 'WARNING';
-                        document.getElementById('label').innerText = "¡CIERRE DE ROUND!";
-                        playSnd('snd' + (Math.floor(Math.random() * 2) + 1));
+                        document.getElementById('label').innerText = '¡CIERRE DE ROUND!';
+                        playSnd('snd' + (Math.floor(Math.random()*2)+1));
                     }
-                    
-                    if (time < 0) {
-                        if (phase === 'WORK' && round >= maxRounds) { 
-                            playSnd('sndA'); 
-                            forceFinish(); 
-                            return; 
-                        }
-                        
-                        playSnd('sndA');
-                        
-                        if (phase === 'PREP') { 
-                            phase = 'WORK'; time = workT; 
-                        } 
-                        else if (phase === 'WORK') { 
-                            phase = 'REST'; time = restT; 
+
+                    if(time < 0) {
+                        if(phase === 'WORK' && round >= maxRounds) {
+                            playSnd('sndA');
                             hitsPerRound.push(hitsThisRound);
-                            hitsThisRound = 0; 
-                            document.getElementById('gpm-val').innerText = "0"; // refresh for rest
-                        } 
-                        else { 
-                            phase = 'WORK'; round++; time = workT; 
+                            forceFinish();
+                            return;
                         }
-                        
-                        document.getElementById('bodyTag').className = phase;
-                        
-                        if (phase === 'WORK') {
-                            document.getElementById('label').innerText = "ROUND " + round;
-                            document.getElementById('timer').classList.add('pulse-text');
+                        playSnd('sndA');
+                        if(phase === 'PREP') {
+                            phase = 'WORK'; time = workT;
+                        } else if(phase === 'WORK') {
+                            phase = 'REST'; time = restT;
+                            hitsPerRound.push(hitsThisRound); hitsThisRound = 0;
+                            document.getElementById('gpm-val').innerText = '0';
                         } else {
-                            document.getElementById('label').innerText = "DESCANSO";
-                            document.getElementById('timer').classList.remove('pulse-text');
+                            phase = 'WORK'; round++; time = workT;
                         }
-                        
+                        document.getElementById('bodyTag').className = phase;
+                        document.getElementById('label').innerText = (phase === 'WORK') ? 'ROUND ' + round : 'DESCANSO';
+                        document.getElementById('timer').classList[phase === 'WORK' ? 'add' : 'remove']('pulse-text');
                         updateRoundDisplay();
                     }
                     updateDisplay();
@@ -810,16 +836,17 @@
         }
 
         function updateDisplay() {
-            let m = Math.floor(time / 60), s = time % 60;
-            document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            let m = Math.floor(time/60), s = time%60;
+            document.getElementById('timer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
-        
-        // Inicialización y Carga de Preferencias
+
+        // ── Init ──
         loadSettings();
+        updateKcalDisplay();
         updateRoundDisplay();
         changeFont(document.getElementById('fontSelect').value);
         prepT = parseInt(document.getElementById('prepTimeSelect').value) || 30;
-        time = prepT; updateDisplay(); 
+        time = prepT; updateDisplay();
         initMic();
     </script>
 </body>
